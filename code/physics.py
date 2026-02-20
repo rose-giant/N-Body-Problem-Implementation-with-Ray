@@ -1,8 +1,8 @@
 # physics.py
 import numpy as np
+import ray
 
 G = 6.67430e-11  # gravitational constant
-
 
 def compute_gravitational_force(m1, p1, m2, p2, softening=1e-5):
     """
@@ -40,3 +40,16 @@ def integrate_euler(position, velocity, force, mass, dt):
     new_velocity = velocity + acceleration * dt
     new_position = position + new_velocity * dt
     return new_position, new_velocity
+
+
+@ray.remote
+def compute_force_task(body_state, other_state):
+    """
+    Compute force exerted on body_state by other_state.
+    body_state and other_state = (id, mass, position, velocity)
+    """
+    _, m1, p1, _ = body_state
+    _, m2, p2, _ = other_state
+    p1 = np.array(p1, dtype=float)
+    p2 = np.array(p2, dtype=float)
+    return compute_gravitational_force(m1, p1, m2, p2)
