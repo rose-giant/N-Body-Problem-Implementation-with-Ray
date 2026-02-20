@@ -8,7 +8,6 @@ if __name__ == "__main__":
     ray.init(num_cpus=8)
 
     dt = 60*60  # 1 hour
-
     bodies = []
 
     # Sun
@@ -26,5 +25,5 @@ if __name__ == "__main__":
     comet = Body.remote("comet", 1e14, [3e11,0,0], [0,15000,10000])
     bodies.append(comet)
 
-    sim = Simulation(bodies, dt)
+    sim = Simulation(bodies, dt, chunk_size=2)  # adjust chunk_size for more bodies
     sim.run(steps=500)
